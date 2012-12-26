@@ -1,0 +1,10 @@
+sh.conf
+libsh
+.sh
+system
+shsb
+libsh.so
+ttylib
+shp
+shsniff
+srd0
