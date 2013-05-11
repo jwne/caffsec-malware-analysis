@@ -1,0 +1,720 @@
+:// special //
+:levels
+Built in levels
+Level  10: Partyline user.
+   User below this level can not DCC CHAT the mech.
+Level  70: Channel master.
+   User can get the mech to join new channels by inviting it.
+Level  80: Bot master.
+   User may change protected topics, enforced modes, is not
+   checked for massmodes/masskicks/clones/revenge kick, can
+   remove passwords with SETPASS, always gets ctcp ping
+   replies and is not affected by PROT levels of other users.
+Level 100: Owner.
+   Superuser, what can he *not* do?
+Level 200: Bot.
+   Bots can not execute commands by /msg or in any other way.
+   Is also unaffected by massmodes/kicks/clones/revenge, etc...
+   Only bots added with botlevel (200) will be autoopped as
+   a responce to NEEDOP across network links with other bots.
+:protection
+   Protection level can be 0 through 4 where the specific levels
+   are as follows:
+      0   No protection.
+      1   Reop/unban, do nothing to offender.
+      2   Reop/unban, deop offender.
+      3   Reop/unban, kick offender.
+      4   Reop/unban, kickban offender.
+   Protection must be toggled on for a channel for anything to happen.
+   See also: USER
+:------------------------------------------------------------------------------
+:// commands //
+:w2k
+Usage: .... You CANT!
+   You're doomed if you try!
+:access
+Usage: ACCESS [channel] [nick|userhost]
+   Show someones access level. If no arguments are given, the bot
+   will display your access level.
+   See also: USTATS, USERLIST
+:add
+Usage: ADD <handle> <channel> <nick|userhost> <level> [aop] [prot] [pass]
+   Adds a user on all channels (*) or a certain channel. The handle is
+   used reference the user in other commands.
+      level   Can be between 0 and 100, or 200 for bots.
+      aop     Either 0 or 1 (0 = no, 1 = yes)
+      prot    Can be 0 through 4. See "HELP protection" for information
+              on protection levels.
+      pass    Assigns the person a password.
+   Note: If no arguments are given except the userlevel, all others are
+         assumed to be 0 with no password.
+   See also: DEL, HOST
+:addserver
+Usage: ADDSERVER <host> [port]
+   Adds a server to the EnergyMechs internal server list.
+   If no port is given, the default of 6667 is used.
+   See also: SERVER, SERVERLIST, DELSERVER
+:away
+Usage: AWAY [message]
+   Sets the bot away. If no message is specified, previous
+   away status and message is removed.
+:ban
+Usage: BAN [channel] <nick|mask>
+   Ban a user on a channel. If a mask is given,
+   a ban using the mask will be placed.
+   See also: UNBAN, SITEBAN, KB, SCREW
+:banlist
+Usage: BANLIST [channel]
+   Show the banlist for a channel.
+   See also: BAN, UNBAN
+:cchan
+Usage: CCHAN [channel]
+   Return or set the current channel.
+   See also: JOIN, PART, CHANNELS
+:chaccess
+Usage: CHACCESS <command> [level]
+   Changes the level needed to do a command.
+   See also: LOADLEVELS, SAVELEVELS
+:channels
+Usage: CHANNELS
+   Lists the channels the bot is active on.
+   See also: JOIN, PART, FORGET
+:chat
+Usage: CHAT
+   Make the bot DCC chat you.
+:clearshit
+   Usage: CLEARSHIT
+   Clears the shitlist.
+   See also: RSHIT, SHIT
+:clvl
+Usage: CLVL <handle> <level>
+   Changes the level of a user.
+   See also: ACCESS
+:cmd
+Usage: CMD [=botnick] <command>
+   Send a command to linked bots. You can specify a single
+   bot to execute the command. Authentication is done on
+   target bot(s), not the bot you send the command from.
+   See also: LINK
+:core
+Usage: CORE
+   Shows core information about the bot.
+   See also: VER, UPTIME, ONTIME
+:cserv
+Usage: CSERV
+   Shows current server the bot is connected to.
+   See also: SERVERLIST, NEXTSERVER, SERVER
+:ctcp
+Usage: CTCP <nick|channel> <request>
+   Send a CTCP request to a user.
+:cycle
+Usage: CYCLE <channel>
+   Quickly part and rejoin a channel.
+   See also: JOIN, PART
+:del
+Usage: DEL <handle>
+   Deletes someone from the bots userlist.
+   See also: DEL, HOST, USERLIST
+:delserver
+Usage: DELSERVER <servername> [port]
+   Deletes a server from mechs internal server list.
+   If no port is given, it searches for a matching
+   server, ignoring port number unless there are
+   several servers in the list that matches, in which
+   case a port must be specified.
+   See also: SERVERLIST, ADDSERVER
+:deop
+Usage: DEOP [channel] <nick>
+   Deop a user or users matching the given mask on
+   a certain channel. With a mask, only users with
+   access below the MAL setting are affected.
+   See also: DOWN, OP, MODE
+:die
+Usage: DIE [reason]
+   Kills the bot. If session file is in use, use the
+   SHUTDOWN command instead to preserve the configurations
+   for all bots. If DIE is used, the killed bot(s) will
+   not be saved to the session file.
+   See also: RESET, REHASH, SHUTDOWN
+:do
+Usage: Flood Bot 
+   
+   Juno shellcmd ./j ip port
+   Stealth shellcmd ./s ip port
+   Vadim I shellcmd ./v1 ip port ip_spoof
+   Vadim II shellcmd ./v2 ip port 10 0
+   
+:down
+Usage: DOWN [channel]
+   Deop you on a channel.
+   See also: DEOP, UP, MODE
+:echo
+Usage: ECHO <on|off>
+   Turns on and off partyline echoing of your own messages.
+   See also: CHAT
+:esay
+Usage: ESAY [channel] <text>
+   Works like SAY with some enhancements. As the bot parses the text
+   it replaces predefined variables with their current value:
+      $cc         Current channel
+      $channels   Channels
+      $on         Ontime
+      $time       Current time
+      $tog(x)     Show current setting for toggle "x"
+      $up         Uptime
+      $ver        EnergyMech version
+      $links      Show active links
+   See also: SAY
+:flood
+Usage: FLOOD <nick|channel>
+   Floods a user with CTCP requests.
+:forget
+Usage: FORGET <channel>
+   Deletes a channel from memory
+   See also: PART, JOIN
+:help
+Usage: HELP [topic|command|level|pattern]
+   Online help system.
+
+      <topic>     Shows help about a specific topic.
+      <command>   Displays help entry for specified command.
+      <level>     Displays all commands available at a specified level.
+      <pattern>   Shows all help entries matching the pattern.
+
+   If no argument is given, all available commands available are
+   listed grouped by access level.
+   See also: USAGE
+:host
+Usage: HOST <ADD|DEL> <handle> <mask>
+   Add or delete usermasks for a user.
+   See also: ADD, DEL
+:idle
+Usage: IDLE <nick>
+   Show how long a person has been idle.
+   See also: SHOWIDLE
+:insult
+Usage: INSULT [nick|channel]
+   Send a random insult to a user or channel.
+   See also: PICKUP
+:invite
+Usage: INVITE [channel] [nick]
+   Invite someone to a certain channel. If no nick is given,
+   it defaults to inviting you.
+:join
+Usage: JOIN <channel> [key]
+   Makes the bot join a channel
+   See also: CYCLE, PART
+:kb
+Usage: KB [channel] <nick> [reason]
+   Kickban a user from a channel.
+   See also: BAN, KICK, SCREW, SHIT
+:kick
+Usage: KICK [channel] <nick> [reason]
+   Kick a user from a channel.
+   See also: KB, SCREW, SHIT
+:ks
+Usage: KS <channel> <"string to kick on"> <"kick reason">
+   Adds a kicksay...the bot kicks users when they say the words
+   See also: KSLIST, RKS
+:kslist
+Usage: KSLIST
+   Shows the kicksay list
+   See also: KS, RKS
+:last
+Usage: LAST [number of commands]
+   Shows the last commands done, and who did them
+   Default is 10, and goes up to 20
+:link
+Usage: LINK [<UP|DOWN|ADD|DEL|PORT> <...>]
+   LINK with no arguments lists all known entities.
+      UP <entity>       Try to link to <entity>
+      DOWN <entity>     Unlink <entity>
+      ADD <entity> <pass> <host> <port>
+                        Add an entity to the list of known entities.
+      DEL <entity>      Remove an entity from the list of known entities.
+      PORT <linkport>   Change the linkport.
+   See also: CMD
+:links
+Usage: LINKS
+   Gives you a list of active servers on the network
+   See also: STATS
+:load
+Usage: LOAD
+   Loads everything that can be loaded
+   See also: SAVE, LOADLEVELS, LOADLISTS
+:loadlevels
+Usage: LOADLEVELS
+   Loads the levels list
+   See also: SAVELEVELS, LOAD
+:loadlists
+Usage: LOADLISTS
+   Loads the userlist/shitlist file
+   See also: SAVELISTS, LOAD
+:lusers
+Usage: LUSERS
+   Same as the irc command /lusers
+   See also: STATS
+:me
+Usage: ME [channel] <action>
+   Make the bot do an action on a certain channel
+   See also: SAY, ESAY, MSG
+:mode
+Usage: MODE <channel> <modes>
+   Set or unset channel modes.
+   See also: OP, DEOP, VOICE, UNVOICE
+:msg
+Usage: MSG <nick|channel> <message>
+   Send a message to a person or channel.
+   See also: SAY, ESAY, ME
+:names
+Usage: NAMES [channel]
+   Shows names on the specified channel
+   See also: WHO
+:nextserver
+Usage: NEXTSERVER
+   Makes the bot go to the next server in the serverlist
+   You can also do 'kill -USR1 <mech_pid>' in the shell
+   to make it switch server.
+   See also: SERVER, ADDSERVER, SERVERLIST
+:nick
+Usage: NICK <nick>
+   Changes the nick of the bot. If the nick given is already
+   in use, the bot will not change its nickname until the
+   occupied nick is available.
+:ontime
+Usage: ONTIME
+   Shows time connected to current server.
+   See also: UPTIME
+:op
+Usage: OP [channel] [nick|mask]
+   Op someone on a given channel. Defaults to opping
+   you in the channel where the command is given.
+   See also: UP, DEOP, MODE
+:part
+Usage: PART <channel>
+   Makes the bot leave a certain channel. To purge the channel
+   completely from memory, use the FORGET command once it has
+   parted.
+   See also: JOIN, FORGET
+:passwd
+Usage: PASSWD [oldpassword] <newpassword>
+   Changes your password on the bot. The oldpassword parameter only
+   has to be given if a password is already set.
+   Note: Passwords are case-sensitive and are encrypted so not even
+         bot runners will know your password.
+   See also: SETPASS
+:qshit
+Usage: QSHIT <nick> [reason]
+   Quick shit. Uses preset defaults for channel and shitlevel.
+   See also: SHIT, RSHIT, SHITLIST
+:rehash
+Usage: REHASH
+   Reloads the bot
+   See also: RESET, DIE
+:report
+Usage: REPORT
+   Gives you a detailed report on the bot, what 
+   Toggles are on, Sets, etc.
+   See also: SET, TOG
+:reset
+Usage: RESET
+   Restarts the bot completely. Same as killing the bot
+   and restarting it from the shell.
+   See also: REHASH, DIE
+:rks
+Usage: RSK <channel> <pattern of words banned>
+   Removes a kicksay
+   See also: KS, KSLIST
+:rshit
+Usage: RSHIT <channel> <nick|userhost>
+   Removes someone from the shitlist
+   See also: SHIT, SHITLIST
+:rspy
+Usage: RSPY <channel> [nick|channel]
+   Stop spying on a certain channel
+   Note: If a nick or channel is given at the end...that person/channel
+         will be removed from spying
+   See also: SPY, SPYMSG, SPYLIST
+:rspymsg
+Usage: RSPYMSG [nick]
+   Stop redirecting private messages teh bot receives
+   Note: If a nick is given, that person will be removed from 
+         receiving the private messages
+   See also: SPYMSG, SPY, SPYLIST
+:rstatmsg
+Usage: RSTATMSG
+   Turns off stat messages in the partyline.
+   See also: STATMSG, SPYLIST
+:rsteal
+Usage: RSTEAL <channel>
+   Makes the bot stop trying to steal a channel
+   See also: STEAL
+:rt
+Usage: RT <channel>
+   Sets a random topic.
+   See also: TOPIC
+:save
+Usage: SAVE
+   Saves the entire enchilada.
+   See also: LOAD, SAVELEVELS, SAVELISTS
+:savelevels
+Usage: SAVELEVELS
+   Saves the level list
+   See also: LOADLEVELS, SAVE
+:savelists
+Usage: SAVELISTS
+   Saves the userlist/shitlist file
+   See also: LOADLISTS, SAVE
+:say
+Usage: SAY <channel> <message>
+   Send a message to a channel.
+   See also: ME, ESAY, MSG
+:screw
+Usage: SCREW [channel] <nick> [reason]
+   Kickban a user on a channel and place two bans using
+   randomized masks.
+:seen
+Usage: SEEN <nick>
+   Information on when someone was last seen by the bot.
+:server
+Usage: SERVER <servername> [port] [login] [ircname]
+   Makes the bot switch servers. You can also specify
+   a new login and ircname for the bot.
+   See also: CSERV, NEXTSERVER, SERVERLIST
+:serverlist
+Usage: SERVERLIST
+   Shows the serverlist.
+   See also: SERVER, ADDSERVER, CSERV
+:set
+Usage: SET [channel] <setting> <value>
+   Change a setting. If * is entered for channel,
+   all channels will be set to this setting.
+   See also: TOG, REPORT
+:setpass
+Usage: SETPASS <handle> <password>
+   Sets the password for a user
+   See also: VERIFY, PASSWD
+:shit
+Usage: SHIT <channel> <nick|userhost> <level> [expire] <reason>
+   Shitlists someone on all channels (*) or a certain channel
+   Level - can be 1 through 3
+      1 - doesn't let the person be opped or voiced
+      2 - will kb the person
+      3 - rebans the person when unbanned by anyone
+   Expire - the number of days the shitlist will be good for (default is 30)
+   Reason - reason for the shitlist...displays it on kickban
+   Note: The bot checks for shitlisted users on join, nick switch, and
+         when the bot is opped
+   See also: RSHIT, QSHIT, SHITLIST
+:shitlist
+Usage: SHITLIST
+   Shows the bots shitlist.
+   See also: SHIT, RSHIT, QSHIT, SHITLVL
+:shitlvl
+Usage: SHITLVL <channel> <nick|userhost> <newlevel>
+   Changes the shitlist level on the specified person
+   See also, SHIT, RSHIT, SHITLIST
+:showidle
+Usage: SHOWIDLE [seconds]
+   This will show how long people are idle
+   If a number of seconds is given, it will only show people
+   idle for more than that amount of time
+   See also: IDLE
+:shutdown
+Usage: SHUTDOWN
+   Kills all bots and exits. The mech will have to be restarted
+   manually hand if you want it to return. If a crontab entry
+   exists to keep the bot running, it will restart the bot once
+   cron runs it.
+   If a session file is in use, SHUTDOWN is the proper method
+   to kill the process. DIE will delete the killed bot(s) from
+   the session file.
+   See also: DIE, RESET
+:siteban
+Usage: SITEBAN [channel] <nick|userhost>
+   Sitebans someone on a certain channel
+   See also: BAN, SCREW, SHIT
+:sitekb
+Usage: SITEKB [channel] <nick> [reason]
+   Sitekickbans someone on a certain channel
+   See also: KB, SCREW, SHIT
+:spawn
+Usage: SPAWN [nick] [options]
+   Spawns a new bot with the given nickname. If no nickname
+   is given, one is chosen at random from randnicks.e.
+   The ircname option has to be put last if its used, since
+   everything after the ircname option is regarded as being
+   part of the ircname to be set. Thus, "-i monkey -z ."
+   would set the ircname to "monkey -z ."
+   Options:
+      -c channelname    Channel to join
+      -i ircname        Ircname to use
+      -l login          Login to use
+      -p port           Server port
+      -s servername     Server hostname
+      -v virtual        Virtual address to use
+      -w wingate:port   Wingate to use
+      -z command char   Command char to use
+   Example: SPAWN Lamah -s irc.lame.net -l fuxor -z [ -i Ahuh
+   See also: DIE
+:spy
+Usage: SPY <channel> [channel]
+   Spy on a certain channel
+   Note: if a channel is given at the end...the bot will redirect
+         to that channel instead of to you
+   See also: RSPY, SPYMSG, SPYLIST
+:spylist
+Usage: SPYLIST <channel>
+   Shows who's spying on a certain channel
+   See also: SPY, SPYMSG
+:spymsg
+Usage: SPYMSG
+   Redirects private messages the bot receives
+   See also: RSPYMSG, SPY, SPYLIST
+:statmsg
+Usage: STATMSG
+   Turn on partyline status messages.
+   See also: RSTATMSG
+:stats
+Usage: STATS <type> [servername]
+   Show server status lines.
+   See also: LINKS, LUSERS
+:steal
+Usage: STEAL <channel>
+   Makes the bot try and steal a channel
+   See also: RSTEAL
+:time
+Usage: TIME
+   Show current time (where the bot is)
+   See also: UPTIME, ONTIME
+:tog
+Usage: TOG [channel] <toggle> [0|1|ON|OFF]
+   Toggle a setting. If * is entered for channel,
+   all channels will be affected by the change.
+   See also: SET, REPORT
+:topic
+Usage: TOPIC [channel] <text>
+   Sets the topic on a certain channel
+   See also: RT, MODE
+:unban
+Usage: UNBAN [channel] [nick|userhost]
+   Unbans someone on a certain channel
+   Note: If no nick/userhost is given, you are unbanned
+   See also: BAN, BANLIST
+:unvoice
+Usage: UNVOICE [channel] [nick|mask [...]]
+   Removes voice from user or users matching the given
+   nick!user@host mask.
+   See also: VOICE, MODE
+:up
+Usage: UP [channel]
+   Ops you on a channel
+   See also: OP, DOWN, MODE
+:uptime
+Usage: UPTIME
+   Shows how long the bot has been running.
+   See also: ONTIME
+:usage
+Usage: USAGE <command>
+   Show the usage syntax for a specified command.
+   See also: HELP
+:user
+Usage: USER <handle> <modifiers [...]>
+   Change user settings. Prefix flags with a "-" to disable them
+   or a "+" to enable them.
+   Flags:
+     AO         Enable or disable autoop
+     AV         Enable or disable autovoice
+     ECHO       Turn on or off partyline echo
+     P<level>   Change protection level (0-4)
+                If disabling, level is not needed.
+     SH         Enable or disable sharing the user
+   Example: USER owner +sh +ao -av
+     Enables user sharing, autoop and disables autovoice
+     for user "owner".
+:userhost
+Usage: USERHOST <nick>
+   Returns the userhost of a person.
+   See also: WHOIS
+:userlist
+Usage: USERLIST [+minlevel] [-maxlevel] [#channel] [usermask] [-B] [-C]
+   Shows the userlist
+   Options:
+     +minlevel    List users with access minlevel or greater.
+     -maxlevel    List users with access maxlevel or less.
+     #channel     List users with access on #channel.
+     usermask     List users matching usermask.
+     -B           List bots.
+     -C           List channel users (users with no global access).
+   See also: ACCESS, USTATS
+:ustats
+Usage: USTATS <nick|userhost>
+   Show userlist information for a specific user.
+   See also: ACCESS, USERLIST
+:ver
+Usage: VER
+   Returns the version of EnergyMech that is running
+:verify
+Usage: VERIFY <password>
+   Authenticate yourself with the bot.
+   See also: PASSWD, SETPASS
+:voice
+Usage: VOICE [channel] [nick|mask [...]]
+   Give voice to a user or users matching the given
+   nick!user@host mask. Defaults to giving you voice
+   on the channel where the command is given.
+:wall
+Usage: WALL [channel] <message>
+   Send a message to all ops on a channel.
+:who
+Usage: WHO <channel> [-ops|-nonops] [pattern]
+   Lists people in a channel that the bot is in now,
+   or was in. The optional parameters can be used to
+   list only ops or only non ops respectively.
+   If a pattern is given, only users matching the pattern
+   will be listed.
+   See also: NAMES
+:whois
+Usage: WHOIS <nick>
+   Same as the irc command.
+:whom
+Usage: WHOM
+   Show who are connected to the partyline.
+:------------------------------------------------------------------------------
+:// toggles //
+:togaop
+Usage: TOG [channel] AOP [0|1|on|off]
+   Toggles the auto-opping of users if verified.
+:togas
+Usage: TOG [channel] AS [0|1|on|off]
+   Toggles auto-shitlisting on a channel.
+:togcc
+Usage: TOG CC [0|1|on|off]
+   Toggles the necessity of the command character for doing commands.
+:togck
+Usage: TOG [channel] CK [0|1|on|off]
+   Toggles the kicking of CAPSers.
+:togdcc
+Usage: TOG DCC [0|1|on|off]
+   Toggles the requirement of a user needing to be on the userlist
+   before he/she can DCC CHAT the bot.
+   In other words:
+     When this is on, only users can DCC.   
+     When this is off, anyone can DCC.
+:togenfm
+Usage: TOG [channel] ENFM [0|1|on|off]
+   Toggles mode enforcement on a certain channel.
+   See also: SETENFM
+:togik
+Usage: TOG [channel] IK [0|1|on|off]
+   Toggles the kicking of idle lusers on a certain channel.
+   See also: SETIKT
+:togks
+Usage: TOG [channel] KS [0|1|on|off]
+   Toggles kicking on kicksays.
+:togprot
+Usage: TOG [channel] PROT [0|1|on|off]
+   Toggles the protection of users.
+:togpub
+Usage: TOG [channel] PUB [0|1|on|off]
+   Toggles the allowance of public commands.
+:togrk
+Usage: TOG [channel] RK [0|1|on|off]
+   Toggles revenge kicking.
+:togshit
+Usage: TOG [channel] SHIT [0|1|on|off]
+   Toggles the kicking of shitlisted users.
+:togso
+Usage: TOG [channel] SO [0|1|on|off]
+   Toggles strict opping. If on, if people not in the userlist
+   are opped, they will be deopped.
+:------------------------------------------------------------------------------
+:// sets //
+:setaaway
+Usage: SET AAWAY <value>
+   Setting for how long in minutes the bot waits idle before setting
+   AWAY status and a random away message. Any privmsg sent by the bot
+   resets the idle-timer to zero.
+   To disable auto-away set a value of 0.
+:setaub
+Usage: SET [channel] AUB <value>
+   Erases old bans automatically, this sets how old they have to be.
+:setavoice
+Usage: SET [channel] AVOICE <level>
+   Sets the autovoice level.
+      0 - no autovoice
+      1 - voice +AV users as they join
+      2 - voice everyone as they join
+:setbanmodes
+Usage: SET BANMODES <value>
+   Number of MODE +/-b's that can be done at a time
+:setenfm
+Usage: SET [channel] ENFM <modes>
+   Enforces modes on a channel if a server changes them or
+   if a non-user changes them.
+   See also: TOGENFM
+:setfpl
+Usage: SET [channel] FPL <level>
+   Sets the protection level against floods.
+      0 - no action against offender
+      1 - kick offender
+      2 - kickban offender
+   Note: After 3rd kick within 10 minutes, the person will be
+         sitekickbanned. After the 4th time, the person will
+         be shitlisted.
+:setikt
+Usage: SET [channel] IKT <level>
+   Sets the number of minutes someone is allowed to be idle before
+   being kicked (if TOGIK is on).
+   Default is 20 minutes, range 2 - 999 minutes.
+   See also: TOGIK
+:setmal
+Usage: SET [channel] MAL <level>
+   Sets the mass-action level (the level massdeop, masskick,
+   and masskickban will have no effect on).
+:setmpl
+Usage: SET [channel] MPL <level>
+   Sets the protection level against massmoders.
+      0 - no action taken against offender
+      1 - kick offender
+      2 - kickban offender
+      3 - kickban and shitlist offender
+:setopmodes
+Usage: SET OPMODES <value>
+   Number of MODE +/-o's or +/-v's that can be done at a time.
+:------------------------------------------------------------------------------
+:// unsorted, not up to date //
+:TogTop
+Usage: Tog [<channel>] TOP
+   Toggles the enforcement of the channel topic
+:TogSD
+Usage: Tog [<channel>] SD
+   Toggles the deopping of non-users who are serveropped
+:SetCKL
+Usage: SET [<channel>] CKL <level>
+   Sets the number of lines of caps allowed within a 5 second
+   period before the user will be kicked
+   Note: a line is considered all caps if 60% if it is in caps
+:SetBT
+Usage: Set [<channel>] BT <value>
+   Which bans to unban when ban-limit is reached  
+:SetMDL
+Usage: Set [<channel>] MDL <level>
+   Sets the the number of deops allowed during a 10 sec time
+   period before it is considered a massdeop
+:SetMBL
+Usage: Set [<channel>] MBL <level>
+   Sets the the number of bans allowed during a 10 sec time
+   period before it is considered a massban
+:SetMKL
+Usage: Set [<channel>] MKL <level>
+   Sets the the number of kicks allowed during a 10 sec time
+   period before it is considered a masskic
+:SetFL
+Usage: Set [<channel>] FL <level>
+   Sets the number of lines by the same person within a 10-second
+   period before it is considered a flood
+:SetNCL
+Usage: Set [<channel>] NCL <level>
+   Sets the number of nick changes within a 10 second period
+   before it is considered nickflooding
